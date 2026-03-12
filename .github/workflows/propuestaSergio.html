@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NutriPrint Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ─── TOKENS ─────────────────────────────────────────────── */
+  :root {
+    --green-deep:   #2D5A3D;
+    --green-mid:    #4A8660;
+    --green-light:  #8DBF9E;
+    --green-pale:   #D6EDE1;
+    --cream:        #F6F1E9;
+    --cream-dark:   #EDE5D5;
+    --white:        #FAFAF7;
+    --terra:        #C96B3A;
+    --terra-light:  #E8A07A;
+    --ink:          #1A2B1F;
+    --ink-mid:      #3D5444;
+    --ink-soft:     #7A9182;
+    --shadow:       rgba(26,43,31,.12);
+    --radius:       16px;
+    --radius-sm:    10px;
+    --ff-title:     'Playfair Display', Georgia, serif;
+    --ff-body:      'DM Sans', system-ui, sans-serif;
+    --transition:   .35s cubic-bezier(.4,0,.2,1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--ff-body);
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── SHELL ──────────────────────────────────────────────── */
+  #app {
+    max-width: 960px;
+    margin: 0 auto;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  /* ─── SCREENS ────────────────────────────────────────────── */
+  .screen {
+    display: none;
+    flex-direction: column;
+    min-height: 100vh;
+    animation: fadeIn .4s ease;
+  }
+  .screen.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── TOPBAR ─────────────────────────────────────────────── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 28px;
+    background: var(--white);
+    border-bottom: 1px solid var(--cream-dark);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar-back {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: var(--green-pale);
+    color: var(--green-deep);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    transition: background var(--transition);
+  }
+  .topbar-back:hover { background: var(--green-light); }
+  .topbar-title {
+    font-family: var(--ff-title);
+    font-size: 1.1rem;
+    color: var(--green-deep);
+  }
+  .topbar-badge {
+    margin-left: auto;
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    background: var(--cream-dark);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  /* ─── COMMON COMPONENTS ──────────────────────────────────── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 14px 26px;
+    border-radius: 50px;
+    font-family: var(--ff-body);
+    font-size: .92rem;
+    font-weight: 500;
+    border: none; cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+  }
+  .btn-primary {
+    background: var(--green-deep);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(45,90,61,.3);
+  }
+  .btn-primary:hover { background: var(--green-mid); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(45,90,61,.35); }
+  .btn-secondary {
+    background: var(--white);
+    color: var(--green-deep);
+    border: 1.5px solid var(--green-mid);
+  }
+  .btn-secondary:hover { background: var(--green-pale); }
+  .btn-terra {
+    background: var(--terra);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(201,107,58,.3);
+  }
+  .btn-terra:hover { background: #b85c2e; transform: translateY(-2px); }
+
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: 0 2px 20px var(--shadow);
+  }
+
+  /* ─── 1. PANTALLA DE INICIO ──────────────────────────────── */
+  #screen-home {
+    background:
+      radial-gradient(ellipse at 80% 20%, rgba(141,191,158,.25) 0%, transparent 55%),
+      radial-gradient(ellipse at 10% 80%, rgba(45,90,61,.12) 0%, transparent 50%),
+      var(--cream);
+  }
+
+  .home-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 64px 28px 40px;
+    flex: 1;
+  }
+
+  .home-logo-wrap {
+    width: 90px; height: 90px;
+    border-radius: 28px;
+    background: var(--green-deep);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 32px rgba(45,90,61,.35);
+    animation: logoPulse 3s ease-in-out infinite;
+  }
+  @keyframes logoPulse {
+    0%,100% { box-shadow: 0 8px 32px rgba(45,90,61,.35); }
+    50%      { box-shadow: 0 8px 40px rgba(45,90,61,.55); }
+  }
+  .home-logo-wrap svg { width: 48px; height: 48px; }
+
+  .home-title {
+    font-family: var(--ff-title);
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: var(--green-deep);
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+  .home-title span { color: var(--terra); }
+  .home-subtitle {
+    font-size: .97rem;
+    color: var(--ink-soft);
+    max-width: 360px;
+    line-height: 1.6;
+    margin-bottom: 48px;
+  }
+
+  .home-nav-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    width: 100%;
+    max-width: 520px;
+    margin-bottom: 20px;
+  }
+  .home-nav-grid .btn { flex-direction: column; gap: 6px; padding: 22px 18px; border-radius: var(--radius); font-size: .88rem; }
+  .home-nav-grid .btn .btn-icon { font-size: 1.8rem; }
+  .home-nav-wide { max-width: 520px; width: 100%; }
+
+  .home-status-bar {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 36px;
+    padding: 12px 20px;
+    background: var(--white);
+    border-radius: 50px;
+    font-size: .82rem;
+    color: var(--ink-mid);
+    box-shadow: 0 2px 12px var(--shadow);
+  }
+  .status-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: #6ac47a;
+    animation: blink 2s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  /* ─── 2. EDITOR DE PLATO ─────────────────────────────────── */
+  #screen-editor {
+    background: var(--cream);
+  }
+
+  .editor-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 20px;
+    padding: 20px 24px;
+    flex: 1;
+  }
+
+  /* PLATO VISUAL */
+  .plate-stage {
+    display: flex; flex-direction: column; align-items: center; gap: 20px;
+  }
+
+  .plate-container {
+    position: relative;
+    width: 280px; height: 280px;
+  }
+  .plate-shadow {
+    position: absolute;
+    bottom: -14px; left: 50%; transform: translateX(-50%);
+    width: 240px; height: 28px;
+    background: radial-gradient(ellipse, rgba(0,0,0,.18) 0%, transparent 70%);
+  }
+  .plate-rim {
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #f0ebe2, #e8e0d0);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,.08), 0 4px 20px rgba(0,0,0,.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .plate-inner {
+    width: 228px; height: 228px;
+    border-radius: 50%;
+    background: #faf8f3;
+    position: relative;
+    overflow: hidden;
+    transition: all .5s ease;
+  }
+
+  /* Segmentos del plato */
+  .plate-segment {
+    position: absolute;
+    transition: all .5s ease;
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  .plate-segment.visible { opacity: 1; transform: scale(1); }
+
+  /* Proteína — cuadrante sup-derecho */
+  #seg-proteina {
+    top: 16px; right: 16px;
+    width: 90px; height: 90px;
+    border-radius: 50% 50% 50% 10%;
+  }
+  /* Verduras — cuadrante inf-izq */
+  #seg-verduras {
+    bottom: 16px; left: 16px;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+  }
+  /* Carbohidratos — base inferior */
+  #seg-carbohidratos {
+    bottom: 10px; left: 50%; transform: translateX(-50%);
+    width: 110px; height: 50px;
+    border-radius: 10px 10px 50% 50%;
+  }
+  #seg-carbohidratos.visible { transform: translateX(-50%) scale(1); }
+  /* Salsa — mancha central */
+  #seg-salsa {
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%) scale(.9);
+    width: 60px; height: 40px;
+    border-radius: 50%;
+    opacity: 0;
+  }
+  #seg-salsa.visible { opacity: .8; transform: translate(-50%,-50%) scale(1); }
+
+  /* Garnish dots */
+  .garnish {
+    position: absolute;
+    border-radius: 50%;
+    animation: garnishFloat 3s ease-in-out infinite;
+    opacity: 0;
+    transition: opacity .5s ease;
+  }
+  .garnish.visible { opacity: 1; }
+  @keyframes garnishFloat {
+    0%,100%{ transform: translateY(0); }
+    50%{ transform: translateY(-3px); }
+  }
+
+  .plate-info-chips {
+    display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+  }
+  .chip {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: .78rem;
+    font-weight: 500;
+    background: var(--white);
+    border: 1px solid var(--cream-dark);
+    color: var(--ink-mid);
+    transition: all .3s ease;
+  }
+  .chip.on { background: var(--green-pale); border-color: var(--green-mid); color: var(--green-deep); }
+
+  /* PANEL DERECHO */
+  .editor-panel {
+    display: flex; flex-direction: column; gap: 16px;
+    overflow-y: auto;
+    max-height: calc(100vh - 80px);
+  }
+
+  .panel-section-title {
+    font-family: var(--ff-title);
+    font-size: 1rem;
+    color: var(--green-deep);
+    margin-bottom: 12px;
+  }
+
+  /* Toggle ingredientes */
+  .ingredient-toggles {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  }
+  .ing-toggle {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 6px;
+    padding: 12px 8px;
+    border-radius: var(--radius-sm);
+    border: 2px solid transparent;
+    background: var(--cream);
+    cursor: pointer;
+    transition: all var(--transition);
+    font-family: var(--ff-body);
+    font-size: .8rem;
+    font-weight: 500;
+    color: var(--ink-mid);
+  }
+  .ing-toggle .ing-icon { font-size: 1.5rem; }
+  .ing-toggle.active {
+    background: var(--green-pale);
+    border-color: var(--green-mid);
+    color: var(--green-deep);
+  }
+  .ing-toggle:hover:not(.active) { background: var(--cream-dark); }
+
+  /* Sliders */
+  .slider-group { display: flex; flex-direction: column; gap: 12px; }
+  .slider-row { display: flex; flex-direction: column; gap: 5px; }
+  .slider-label {
+    display: flex; justify-content: space-between;
+    font-size: .82rem;
+    color: var(--ink-mid);
+  }
+  .slider-val { font-weight: 600; color: var(--green-deep); }
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%; height: 6px;
+    border-radius: 3px;
+    background: var(--cream-dark);
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--green-deep);
+    box-shadow: 0 2px 8px rgba(45,90,61,.35);
+    transition: transform .2s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+  .macro-bars {
+    display: flex; gap: 6px; margin-top: 6px;
+  }
+  .macro-bar-wrap { flex: 1; }
+  .macro-bar-label { font-size: .7rem; color: var(--ink-soft); margin-bottom: 3px; text-align: center; }
+  .macro-bar-track {
+    height: 56px;
+    border-radius: 4px;
+    background: var(--cream-dark);
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: flex-end;
+  }
+  .macro-bar-fill {
+    width: 100%;
+    border-radius: 4px;
+    transition: height .4s ease;
+  }
+
+  /* ─── 3. BIBLIOTECA ──────────────────────────────────────── */
+  #screen-library {
+    background: var(--cream);
+    padding-bottom: 40px;
+  }
+  .library-header {
+    padding: 24px 24px 8px;
+  }
+  .library-header h2 {
+    font-family: var(--ff-title);
+    font-size: 1.7rem;
+    color: var(--green-deep);
+  }
+  .library-header p { color: var(--ink-soft); font-size: .88rem; margin-top: 4px; }
+
+  .recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    padding: 16px 24px;
+  }
+  .recipe-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 2px 16px var(--shadow);
+    transition: transform var(--transition), box-shadow var(--transition);
+    cursor: default;
+  }
+  .recipe-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px var(--shadow); }
+
+  .recipe-thumb {
+    height: 130px;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .recipe-thumb-plate {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(145deg,#f0ebe2,#e8e0d0);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.4rem;
+    box-shadow: 0 4px 14px rgba(0,0,0,.1);
+  }
+
+  .recipe-body { padding: 16px; }
+  .recipe-name {
+    font-family: var(--ff-title);
+    font-size: 1.05rem;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .recipe-tags {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .recipe-tag {
+    font-size: .7rem;
+    padding: 3px 8px;
+    border-radius: 20px;
+    background: var(--green-pale);
+    color: var(--green-deep);
+    font-weight: 500;
+  }
+  .recipe-macros {
+    display: flex; gap: 12px;
+    font-size: .78rem;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+  }
+  .recipe-macros span { font-weight: 600; color: var(--ink-mid); }
+
+  /* ─── 4. IMPRESIÓN ───────────────────────────────────────── */
+  #screen-printing {
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(45,90,61,.15) 0%, transparent 60%),
+      var(--cream);
+    display: flex; flex-direction: column; align-items: center; padding: 0 24px 40px;
+  }
+
+  .printing-stage {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 32px;
+    text-align: center;
+    padding-top: 20px;
+  }
+
+  .printer-visual {
+    position: relative;
+    width: 200px;
+  }
+  .printer-body {
+    width: 200px; height: 120px;
+    background: linear-gradient(160deg, #f2f2ef, #e8e5df);
+    border-radius: 16px 16px 8px 8px;
+    border: 2px solid var(--cream-dark);
+    position: relative;
+    box-shadow: 0 8px 30px rgba(0,0,0,.12);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .printer-slot {
+    width: 120px; height: 8px;
+    background: var(--ink);
+    border-radius: 4px;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .printer-slot-light {
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.8), transparent);
+    animation: slotLight 1.8s linear infinite;
+  }
+  @keyframes slotLight { to { left: 140%; } }
+
+  .printer-led {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #6ac47a;
+    position: absolute;
+    top: 14px; right: 20px;
+    animation: blink 1.2s ease-in-out infinite;
+  }
+
+  .printer-logo {
+    font-family: var(--ff-title);
+    font-size: .7rem;
+    color: var(--ink-soft);
+    letter-spacing: .06em;
+  }
+
+  .food-output {
+    position: absolute;
+    bottom: -2px; left: 50%; transform: translateX(-50%);
+    width: 100px; height: 0;
+    border-radius: 8px 8px 0 0;
+    background: linear-gradient(180deg, var(--green-mid), var(--terra));
+    transition: height .3s ease;
+    overflow: hidden;
+  }
+
+  .printing-title {
+    font-family: var(--ff-title);
+    font-size: 1.8rem;
+    color: var(--green-deep);
+  }
+  .printing-subtitle {
+    font-size: .92rem;
+    color: var(--ink-soft);
+    margin-top: 8px;
+  }
+
+  .progress-track {
+    width: 100%; max-width: 380px;
+    height: 10px;
+    background: var(--cream-dark);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 5px;
+    background: linear-gradient(90deg, var(--green-mid), var(--green-light));
+    width: 0%;
+    transition: width .4s ease;
+  }
+
+  .printing-steps {
+    display: flex; flex-direction: column; gap: 8px;
+    width: 100%; max-width: 380px;
+    text-align: left;
+  }
+  .print-step {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px;
+    background: var(--white);
+    border-radius: var(--radius-sm);
+    font-size: .85rem;
+    color: var(--ink-mid);
+    opacity: .4;
+    transition: opacity .4s, background .4s;
+  }
+  .print-step.done { opacity: 1; background: var(--green-pale); color: var(--green-deep); }
+  .print-step.done .step-icon { color: var(--green-deep); }
+  .print-step.active { opacity: 1; }
+  .step-icon { font-size: 1.1rem; }
+
+  .done-message {
+    display: none;
+    flex-direction: column; align-items: center; gap: 14px;
+    animation: fadeIn .6s ease;
+  }
+  .done-emoji { font-size: 3.5rem; }
+  .done-message h3 {
+    font-family: var(--ff-title);
+    font-size: 1.6rem;
+    color: var(--green-deep);
+  }
+  .done-message p { color: var(--ink-soft); font-size: .9rem; }
+
+  /* ─── 5. ESTADO IMPRESORA ────────────────────────────────── */
+  #screen-status {
+    background: var(--cream);
+    padding-bottom: 40px;
+  }
+  .status-layout {
+    padding: 20px 24px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+
+  .status-hero {
+    background: linear-gradient(135deg, var(--green-deep), var(--green-mid));
+    border-radius: var(--radius);
+    padding: 28px;
+    display: flex; align-items: center; gap: 20px;
+    color: white;
+  }
+  .status-hero-icon { font-size: 3rem; }
+  .status-hero h3 {
+    font-family: var(--ff-title);
+    font-size: 1.3rem;
+    margin-bottom: 4px;
+  }
+  .status-hero p { font-size: .85rem; opacity: .8; }
+  .status-badge {
+    margin-left: auto;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-weight: 600; font-size: .82rem;
+    white-space: nowrap;
+  }
+  .badge-ready { background: rgba(255,255,255,.2); }
+  .badge-printing { background: var(--terra); }
+
+  .status-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  }
+
+  .status-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: 0 2px 16px var(--shadow);
+  }
+  .status-card-label {
+    font-size: .76rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .06em;
+    color: var(--ink-soft); margin-bottom: 14px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .status-card-val {
+    font-family: var(--ff-title);
+    font-size: 1.9rem;
+    color: var(--green-deep);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .status-card-sub { font-size: .78rem; color: var(--ink-soft); }
+
+  /* Barras de nivel */
+  .level-list { display: flex; flex-direction: column; gap: 10px; }
+  .level-item {}
+  .level-item-top {
+    display: flex; justify-content: space-between;
+    font-size: .82rem; color: var(--ink-mid);
+    margin-bottom: 4px;
+  }
+  .level-item-top span:last-child { font-weight: 600; }
+  .level-track {
+    height: 8px; border-radius: 4px;
+    background: var(--cream-dark);
+    overflow: hidden;
+  }
+  .level-fill {
+    height: 100%; border-radius: 4px;
+    transition: width .6s ease;
+  }
+
+  /* Temperatura gauge visual */
+  .temp-gauge {
+    position: relative;
+    width: 100%; height: 14px;
+    background: linear-gradient(90deg, #6ac47a, #f5c842, #e85d4a);
+    border-radius: 7px;
+    margin-top: 8px;
+  }
+  .temp-needle {
+    position: absolute;
+    top: -6px;
+    width: 4px; height: 26px;
+    background: var(--ink);
+    border-radius: 2px;
+    transform: translateX(-50%);
+    transition: left .8s ease;
+  }
+
+  .status-log {
+    background: var(--ink);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    color: #7ec496;
+    font-family: 'Courier New', monospace;
+    font-size: .78rem;
+    line-height: 1.8;
+  }
+  .log-line { opacity: .7; }
+  .log-line.new { opacity: 1; color: #a8d8b4; }
+
+  /* ─── FOOTER NAV ─────────────────────────────────────────── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%; max-width: 960px;
+    background: var(--white);
+    border-top: 1px solid var(--cream-dark);
+    display: flex;
+    padding: 10px 0 14px;
+    z-index: 200;
+  }
+  .bottom-nav-btn {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    background: none; border: none; cursor: pointer;
+    font-family: var(--ff-body);
+    font-size: .7rem;
+    color: var(--ink-soft);
+    transition: color var(--transition);
+  }
+  .bottom-nav-btn .nav-icon { font-size: 1.35rem; }
+  .bottom-nav-btn.active { color: var(--green-deep); font-weight: 600; }
+
+  /* ─── TOAST ──────────────────────────────────────────────── */
+  #toast {
+    position: fixed;
+    bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 50px;
+    font-size: .85rem;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    transition: all .35s ease;
+    z-index: 999;
+    pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ─── SCROLLBAR ──────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--cream-dark); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ══════════════════════════════════════════════════════════
+       1. PANTALLA DE INICIO
+  ══════════════════════════════════════════════════════════ -->
+  <section id="screen-home" class="screen active">
+    <div class="home-hero">
+
+      <div class="home-logo-wrap">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Plato -->
+          <circle cx="24" cy="28" r="14" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>
+          <ellipse cx="24" cy="28" rx="10" ry="10" fill="rgba(255,255,255,.2)"/>
+          <!-- Vapor -->
+          <path d="M18 14 Q18 10 20 12 Q20 8 22 10" stroke="rgba(255,255,255,.8)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <path d="M24 12 Q24 8 26 10 Q26 6 28 8" stroke="rgba(255,255,255,.8)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <!-- Punto central -->
+          <circle cx="24" cy="28" r="3" fill="rgba(255,255,255,.9)"/>
+        </svg>
+      </div>
+
+      <h1 class="home-title">NutriPrint<br><span>Home</span></h1>
+      <p class="home-subtitle">Diseña tu plato ideal y deja que tu impresora lo cree. Nutrición personalizada, directa a tu mesa.</p>
+
+      <div class="home-nav-grid">
+        <button class="btn btn-primary" onclick="goTo('editor')">
+          <span class="btn-icon">🍽️</span>
+          Diseñar plato
+        </button>
+        <button class="btn btn-secondary" onclick="goTo('library')">
+          <span class="btn-icon">📚</span>
+          Biblioteca
+        </button>
+      </div>
+
+      <button class="btn btn-secondary home-nav-wide" onclick="goTo('status')" style="margin-top:0">
+        <span>🖨️</span> Estado de la impresora
+      </button>
+
+      <div class="home-status-bar">
+        <div class="status-dot"></div>
+        Impresora conectada · NutriPrint Pro 3
+        &nbsp;·&nbsp; <strong>Lista</strong>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════
+       2. EDITOR DE PLATO
+  ══════════════════════════════════════════════════════════ -->
+  <section id="screen-editor" class="screen">
+    <div class="topbar">
+      <button class="topbar-back" onclick="goTo('home')">←</button>
+      <span class="topbar-title">Editor de plato</span>
+      <span class="topbar-badge">Creación libre</span>
+    </div>
+
+    <div class="editor-layout">
+
+      <!-- IZQUIERDA: plato visual -->
+      <div class="plate-stage">
+        <div class="plate-container">
+          <div class="plate-rim" id="plateRim">
+            <div class="plate-inner" id="plateInner">
+              <!-- Segmentos de comida -->
+              <div class="plate-segment" id="seg-proteina"></div>
+              <div class="plate-segment" id="seg-verduras"></div>
+              <div class="plate-segment" id="seg-carbohidratos"></div>
+              <div class="plate-segment" id="seg-salsa"></div>
+              <!-- Garnish dots -->
+              <div class="garnish" id="g1" style="width:7px;height:7px;top:40%;left:55%;animation-delay:.3s"></div>
+              <div class="garnish" id="g2" style="width:5px;height:5px;top:30%;left:40%;animation-delay:.7s"></div>
+              <div class="garnish" id="g3" style="width:8px;height:8px;top:60%;left:65%;animation-delay:1s"></div>
+            </div>
+          </div>
+          <div class="plate-shadow"></div>
+        </div>
+
+        <div class="plate-info-chips" id="plateChips">
+          <div class="chip" id="chip-proteina">🥩 Proteína</div>
+          <div class="chip" id="chip-verduras">🥦 Verduras</div>
+          <div class="chip" id="chip-carbohidratos">🌾 Carbos</div>
+          <div class="chip" id="chip-salsa">🫙 Salsa</div>
+        </div>
+
+        <button class="btn btn-terra" style="width:100%;max-width:300px" onclick="startPrint()">
+          🖨️ &nbsp;Imprimir plato
+        </button>
+      </div>
+
+      <!-- DERECHA: panel -->
+      <div class="editor-panel">
+
+        <!-- Ingredientes -->
+        <div class="card">
+          <p class="panel-section-title">Ingredientes</p>
+          <div class="ingredient-toggles">
+            <button class="ing-toggle active" id="tog-proteina" onclick="toggleIng('proteina')">
+              <span class="ing-icon">🥩</span> Proteína
+            </button>
+            <button class="ing-toggle" id="tog-verduras" onclick="toggleIng('verduras')">
+              <span class="ing-icon">🥦</span> Verduras
+            </button>
+            <button class="ing-toggle" id="tog-carbohidratos" onclick="toggleIng('carbohidratos')">
+              <span class="ing-icon">🌾</span> Carbohidratos
+            </button>
+            <button class="ing-toggle" id="tog-salsa" onclick="toggleIng('salsa')">
+              <span class="ing-icon">🫙</span> Salsa
+            </button>
+          </div>
+        </div>
+
+        <!-- Nutrición -->
+        <div class="card">
+          <p class="panel-section-title">Nutrición objetivo</p>
+          <div class="slider-group">
+            <div class="slider-row">
+              <div class="slider-label">
+                <span>🔥 Calorías</span>
+                <span class="slider-val" id="val-cal">420 kcal</span>
+              </div>
+              <input type="range" id="sl-cal" min="200" max="900" value="420" oninput="updateSlider('cal',this.value)">
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <span>💪 Proteínas</span>
+                <span class="slider-val" id="val-prot">28 g</span>
+              </div>
+              <input type="range" id="sl-prot" min="5" max="80" value="28" oninput="updateSlider('prot',this.value)">
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <span>🌾 Carbohidratos</span>
+                <span class="slider-val" id="val-carb">45 g</span>
+              </div>
+              <input type="range" id="sl-carb" min="5" max="120" value="45" oninput="updateSlider('carb',this.value)">
+            </div>
+          </div>
+
+          <!-- Barras visuales -->
+          <div class="macro-bars" style="margin-top:16px">
+            <div class="macro-bar-wrap">
+              <div class="macro-bar-label">Prot.</div>
+              <div class="macro-bar-track">
+                <div class="macro-bar-fill" id="bar-prot" style="height:40%;background:#4A8660"></div>
+              </div>
+            </div>
+            <div class="macro-bar-wrap">
+              <div class="macro-bar-label">Carbs</div>
+              <div class="macro-bar-track">
+                <div class="macro-bar-fill" id="bar-carb" style="height:55%;background:#C96B3A"></div>
+              </div>
+            </div>
+            <div class="macro-bar-wrap">
+              <div class="macro-bar-label">Grasa</div>
+              <div class="macro-bar-track">
+                <div class="macro-bar-fill" id="bar-fat" style="height:30%;background:#E8A07A"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Variante / intensidad -->
+        <div class="card">
+          <p class="panel-section-title">Intensidad del sabor</p>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-secondary" style="flex:1;font-size:.8rem;padding:10px" id="intens-suave" onclick="setIntensity('suave')">😌 Suave</button>
+            <button class="btn btn-primary"  style="flex:1;font-size:.8rem;padding:10px" id="intens-medio" onclick="setIntensity('medio')">😋 Medio</button>
+            <button class="btn btn-secondary" style="flex:1;font-size:.8rem;padding:10px" id="intens-fuerte" onclick="setIntensity('fuerte')">🌶️ Fuerte</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════
+       3. BIBLIOTECA DE RECETAS
+  ══════════════════════════════════════════════════════════ -->
+  <section id="screen-library" class="screen" style="padding-bottom:80px">
+    <div class="topbar">
+      <button class="topbar-back" onclick="goTo('home')">←</button>
+      <span class="topbar-title">Biblioteca de recetas</span>
+    </div>
+
+    <div class="library-header">
+      <h2>Recetas predefinidas</h2>
+      <p>Elige una receta y cárgala directamente en el editor.</p>
+    </div>
+
+    <div class="recipe-grid" id="recipeGrid">
+      <!-- Se renderizan por JS -->
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════
+       4. PANTALLA DE IMPRESIÓN
+  ══════════════════════════════════════════════════════════ -->
+  <section id="screen-printing" class="screen">
+    <div class="topbar" style="width:100%">
+      <button class="topbar-back" onclick="cancelPrint()">←</button>
+      <span class="topbar-title">Imprimiendo plato</span>
+      <span class="topbar-badge" id="print-percent">0%</span>
+    </div>
+
+    <div class="printing-stage">
+
+      <!-- Impresora animada -->
+      <div class="printer-visual">
+        <div class="printer-body">
+          <div class="printer-led"></div>
+          <div class="printer-slot">
+            <div class="printer-slot-light"></div>
+          </div>
+          <div class="printer-logo">NutriPrint Pro 3</div>
+        </div>
+        <div class="food-output" id="foodOutput"></div>
+      </div>
+
+      <!-- Mensaje -->
+      <div id="print-status-msg">
+        <h2 class="printing-title" id="printTitle">Preparando impresión...</h2>
+        <p class="printing-subtitle" id="printSub">La impresora está calibrando los ingredientes</p>
+      </div>
+
+      <!-- Progreso -->
+      <div style="width:100%;max-width:380px;display:flex;flex-direction:column;gap:8px">
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div style="text-align:right;font-size:.8rem;color:var(--ink-soft)" id="progressLabel">0 de 100%</div>
+      </div>
+
+      <!-- Pasos -->
+      <div class="printing-steps">
+        <div class="print-step" id="ps1"><span class="step-icon">⚙️</span> Calibrando extrusores</div>
+        <div class="print-step" id="ps2"><span class="step-icon">🥗</span> Cargando ingredientes base</div>
+        <div class="print-step" id="ps3"><span class="step-icon">🎨</span> Aplicando capas de sabor</div>
+        <div class="print-step" id="ps4"><span class="step-icon">✨</span> Acabados finales</div>
+      </div>
+
+      <!-- Mensaje final -->
+      <div class="done-message" id="doneMsgWrap">
+        <div class="done-emoji">🍽️</div>
+        <h3>¡Plato listo para comer!</h3>
+        <p>Tu plato ha sido impreso con éxito.<br>¡Que aproveche!</p>
+        <div style="display:flex;gap:12px;margin-top:8px">
+          <button class="btn btn-primary" onclick="goTo('home')">🏠 Inicio</button>
+          <button class="btn btn-secondary" onclick="goTo('editor')">🍽️ Nuevo plato</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════
+       5. ESTADO DE LA IMPRESORA
+  ══════════════════════════════════════════════════════════ -->
+  <section id="screen-status" class="screen" style="padding-bottom:80px">
+    <div class="topbar">
+      <button class="topbar-back" onclick="goTo('home')">←</button>
+      <span class="topbar-title">Estado de la impresora</span>
+    </div>
+
+    <div class="status-layout">
+
+      <!-- Hero -->
+      <div class="status-hero">
+        <div class="status-hero-icon">🖨️</div>
+        <div>
+          <h3>NutriPrint Pro 3</h3>
+          <p>Firmware v4.2.1 · Conectada por WiFi</p>
+        </div>
+        <div class="status-badge badge-ready" id="statusBadge">✅ Lista</div>
+      </div>
+
+      <!-- Grid de tarjetas -->
+      <div class="status-grid">
+
+        <!-- Temperatura -->
+        <div class="status-card" style="grid-column:1/-1">
+          <div class="status-card-label">🌡️ Temperatura del extrusor</div>
+          <div class="status-card-val" id="tempVal">68°C</div>
+          <div class="status-card-sub">Rango óptimo: 60 – 85 °C</div>
+          <div class="temp-gauge">
+            <div class="temp-needle" id="tempNeedle" style="left:40%"></div>
+          </div>
+        </div>
+
+        <!-- Platos hoy -->
+        <div class="status-card">
+          <div class="status-card-label">🍽️ Platos hoy</div>
+          <div class="status-card-val">3</div>
+          <div class="status-card-sub">Último: hace 2 h</div>
+        </div>
+
+        <!-- Horas activas -->
+        <div class="status-card">
+          <div class="status-card-label">⏱️ Tiempo activa</div>
+          <div class="status-card-val">1h 24m</div>
+          <div class="status-card-sub">Esta sesión</div>
+        </div>
+      </div>
+
+      <!-- Niveles de ingredientes -->
+      <div class="card">
+        <p class="panel-section-title">Nivel de ingredientes</p>
+        <div class="level-list">
+          <div class="level-item">
+            <div class="level-item-top"><span>🥩 Proteína base</span><span>72%</span></div>
+            <div class="level-track"><div class="level-fill" style="width:72%;background:#4A8660"></div></div>
+          </div>
+          <div class="level-item">
+            <div class="level-item-top"><span>🥦 Verduras</span><span>88%</span></div>
+            <div class="level-track"><div class="level-fill" style="width:88%;background:#7BAE8C"></div></div>
+          </div>
+          <div class="level-item">
+            <div class="level-item-top"><span>🌾 Carbohidratos</span><span>55%</span></div>
+            <div class="level-track"><div class="level-fill" style="width:55%;background:#C96B3A"></div></div>
+          </div>
+          <div class="level-item">
+            <div class="level-item-top"><span>🫙 Salsa/condimentos</span><span>31%</span></div>
+            <div class="level-track"><div class="level-fill" style="width:31%;background:#E8A07A"></div></div>
+          </div>
+          <div class="level-item">
+            <div class="level-item-top"><span>💧 Agua purificada</span><span>94%</span></div>
+            <div class="level-track"><div class="level-fill" style="width:94%;background:#6ab3d4"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Log del sistema -->
+      <div class="status-log">
+        <div class="log-line">[09:14:22] Sistema iniciado correctamente</div>
+        <div class="log-line">[09:14:25] Conexión WiFi establecida</div>
+        <div class="log-line">[09:20:11] Impresión #001 completada — Bol de quinoa</div>
+        <div class="log-line">[11:03:48] Impresión #002 completada — Ensalada mediterránea</div>
+        <div class="log-line new">[12:41:05] Impresora en reposo — lista para nueva orden</div>
+      </div>
+
+    </div>
+  </section>
+
+</div><!-- /app -->
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="bottom-nav-btn active" id="nav-home" onclick="goTo('home')">
+    <span class="nav-icon">🏠</span> Inicio
+  </button>
+  <button class="bottom-nav-btn" id="nav-editor" onclick="goTo('editor')">
+    <span class="nav-icon">🍽️</span> Editor
+  </button>
+  <button class="bottom-nav-btn" id="nav-library" onclick="goTo('library')">
+    <span class="nav-icon">📚</span> Recetas
+  </button>
+  <button class="bottom-nav-btn" id="nav-status" onclick="goTo('status')">
+    <span class="nav-icon">🖨️</span> Impresora
+  </button>
+</nav>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ────────────────────────────────────────────────────────────────
+// ESTADO GLOBAL
+// ────────────────────────────────────────────────────────────────
+const state = {
+  activeIngredients: { proteina: true, verduras: false, carbohidratos: false, salsa: false },
+  intensity: 'medio',
+  printTimer: null,
+};
+
+// ────────────────────────────────────────────────────────────────
+// DATOS DE RECETAS
+// ────────────────────────────────────────────────────────────────
+const RECIPES = [
+  {
+    id: 'r1', name: 'Bol de quinoa mediterráneo', emoji: '🌿',
+    bg: 'linear-gradient(135deg,#D6EDE1,#A8CDBA)',
+    tags: ['Vegetariano','Alto en fibra'],
+    cal: 380, prot: 18, carb: 52,
+    ingredients: { proteina: false, verduras: true, carbohidratos: true, salsa: true },
+    sliders: { cal: 380, prot: 18, carb: 52 },
+  },
+  {
+    id: 'r2', name: 'Pollo con verduras al vapor', emoji: '🍗',
+    bg: 'linear-gradient(135deg,#F5E6D4,#E8C49A)',
+    tags: ['Alto en proteína','Bajo en carbos'],
+    cal: 460, prot: 52, carb: 15,
+    ingredients: { proteina: true, verduras: true, carbohidratos: false, salsa: false },
+    sliders: { cal: 460, prot: 52, carb: 15 },
+  },
+  {
+    id: 'r3', name: 'Pasta integral con pesto', emoji: '🍝',
+    bg: 'linear-gradient(135deg,#D4EAD0,#B5D9B0)',
+    tags: ['Carbohidratos complejos','Energizante'],
+    cal: 520, prot: 22, carb: 78,
+    ingredients: { proteina: false, verduras: true, carbohidratos: true, salsa: true },
+    sliders: { cal: 520, prot: 22, carb: 78 },
+  },
+  {
+    id: 'r4', name: 'Salmón con arroz integral', emoji: '🐟',
+    bg: 'linear-gradient(135deg,#D5E8F0,#A8C8DC)',
+    tags: ['Omega-3','Equilibrado'],
+    cal: 490, prot: 40, carb: 48,
+    ingredients: { proteina: true, verduras: false, carbohidratos: true, salsa: true },
+    sliders: { cal: 490, prot: 40, carb: 48 },
+  },
+  {
+    id: 'r5', name: 'Ensalada proteica detox', emoji: '🥗',
+    bg: 'linear-gradient(135deg,#E6F2E0,#C2DEB8)',
+    tags: ['Bajo en calorías','Detox'],
+    cal: 290, prot: 25, carb: 18,
+    ingredients: { proteina: true, verduras: true, carbohidratos: false, salsa: true },
+    sliders: { cal: 290, prot: 25, carb: 18 },
+  },
+  {
+    id: 'r6', name: 'Lentejas con verduras', emoji: '🫘',
+    bg: 'linear-gradient(135deg,#F0E6D0,#D9C09A)',
+    tags: ['Vegano','Alto en hierro'],
+    cal: 410, prot: 24, carb: 58,
+    ingredients: { proteina: true, verduras: true, carbohidratos: true, salsa: false },
+    sliders: { cal: 410, prot: 24, carb: 58 },
+  },
+];
+
+// ────────────────────────────────────────────────────────────────
+// CONFIGURACIÓN VISUAL DE INGREDIENTES
+// ────────────────────────────────────────────────────────────────
+const ING_CONFIG = {
+  proteina:      { color: '#C47A5A', shadow: '#A0553A', garnish: '#D4956E' },
+  verduras:      { color: '#4A8660', shadow: '#2D5A3D', garnish: '#7BAE8C' },
+  carbohidratos: { color: '#D4AA60', shadow: '#B8883A', garnish: '#E8C87A' },
+  salsa:         { color: '#B84040', shadow: '#8A2020', garnish: '#D46060' },
+};
+
+// ────────────────────────────────────────────────────────────────
+// NAVEGACIÓN
+// ────────────────────────────────────────────────────────────────
+function goTo(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + screenId).classList.add('active');
+
+  document.querySelectorAll('.bottom-nav-btn').forEach(b => b.classList.remove('active'));
+  const navBtn = document.getElementById('nav-' + screenId);
+  if (navBtn) navBtn.classList.add('active');
+
+  // Mostrar / ocultar nav
+  const hideNav = ['printing'];
+  document.getElementById('bottomNav').style.display = hideNav.includes(screenId) ? 'none' : 'flex';
+
+  // Acciones específicas
+  if (screenId === 'editor') renderPlate();
+}
+
+// ────────────────────────────────────────────────────────────────
+// EDITOR: TOGGLE INGREDIENTES
+// ────────────────────────────────────────────────────────────────
+function toggleIng(name) {
+  state.activeIngredients[name] = !state.activeIngredients[name];
+  document.getElementById('tog-' + name).classList.toggle('active', state.activeIngredients[name]);
+  renderPlate();
+}
+
+function renderPlate() {
+  const ings = state.activeIngredients;
+
+  Object.keys(ings).forEach(name => {
+    const seg = document.getElementById('seg-' + name);
+    const chip = document.getElementById('chip-' + name);
+    const cfg = ING_CONFIG[name];
+
+    if (ings[name]) {
+      seg.classList.add('visible');
+      seg.style.background = cfg.color;
+      seg.style.boxShadow = `inset 0 -3px 8px ${cfg.shadow}33`;
+      chip.classList.add('on');
+    } else {
+      seg.classList.remove('visible');
+      chip.classList.remove('on');
+    }
+  });
+
+  // Garnish basado en los ingredientes activos
+  const activeList = Object.keys(ings).filter(k => ings[k]);
+  const garnishColor = activeList.length ? ING_CONFIG[activeList[0]].garnish : '#ccc';
+  ['g1','g2','g3'].forEach(gid => {
+    const el = document.getElementById(gid);
+    el.style.background = garnishColor;
+    el.classList.toggle('visible', activeList.length > 1);
+  });
+}
+
+// ────────────────────────────────────────────────────────────────
+// EDITOR: SLIDERS
+// ────────────────────────────────────────────────────────────────
+function updateSlider(type, val) {
+  if (type === 'cal') {
+    document.getElementById('val-cal').textContent = val + ' kcal';
+  } else if (type === 'prot') {
+    document.getElementById('val-prot').textContent = val + ' g';
+    document.getElementById('bar-prot').style.height = (val / 80 * 100) + '%';
+  } else if (type === 'carb') {
+    document.getElementById('val-carb').textContent = val + ' g';
+    document.getElementById('bar-carb').style.height = (val / 120 * 100) + '%';
+    document.getElementById('bar-fat').style.height = Math.max(10, 100 - val / 120 * 70) + '%';
+  }
+}
+
+// ────────────────────────────────────────────────────────────────
+// EDITOR: INTENSIDAD
+// ────────────────────────────────────────────────────────────────
+function setIntensity(level) {
+  state.intensity = level;
+  ['suave','medio','fuerte'].forEach(l => {
+    const btn = document.getElementById('intens-' + l);
+    btn.className = l === level ? 'btn btn-primary' : 'btn btn-secondary';
+    btn.style.flex = '1'; btn.style.fontSize = '.8rem'; btn.style.padding = '10px';
+  });
+  showToast('Intensidad: ' + level);
+}
+
+// ────────────────────────────────────────────────────────────────
+// BIBLIOTECA: RENDER RECETAS
+// ────────────────────────────────────────────────────────────────
+function renderLibrary() {
+  const grid = document.getElementById('recipeGrid');
+  grid.innerHTML = RECIPES.map(r => `
+    <div class="recipe-card">
+      <div class="recipe-thumb" style="background:${r.bg}">
+        <div class="recipe-thumb-plate">${r.emoji}</div>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-name">${r.name}</div>
+        <div class="recipe-tags">
+          ${r.tags.map(t => `<span class="recipe-tag">${t}</span>`).join('')}
+        </div>
+        <div class="recipe-macros">
+          🔥 <span>${r.cal} kcal</span> &nbsp; 💪 <span>${r.prot}g</span> prot &nbsp; 🌾 <span>${r.carb}g</span> carbs
+        </div>
+        <button class="btn btn-primary" style="width:100%;font-size:.82rem;padding:12px" onclick="loadRecipe('${r.id}')">
+          Cargar en editor →
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadRecipe(id) {
+  const r = RECIPES.find(x => x.id === id);
+  if (!r) return;
+
+  // Aplicar ingredientes
+  Object.keys(r.ingredients).forEach(k => {
+    state.activeIngredients[k] = r.ingredients[k];
+    document.getElementById('tog-' + k).classList.toggle('active', r.ingredients[k]);
+  });
+
+  // Aplicar sliders
+  document.getElementById('sl-cal').value  = r.sliders.cal;
+  document.getElementById('sl-prot').value = r.sliders.prot;
+  document.getElementById('sl-carb').value = r.sliders.carb;
+  updateSlider('cal',  r.sliders.cal);
+  updateSlider('prot', r.sliders.prot);
+  updateSlider('carb', r.sliders.carb);
+
+  showToast('✅ Receta cargada: ' + r.name);
+  goTo('editor');
+}
+
+// ────────────────────────────────────────────────────────────────
+// IMPRESIÓN
+// ────────────────────────────────────────────────────────────────
+function startPrint() {
+  const activeCount = Object.values(state.activeIngredients).filter(Boolean).length;
+  if (activeCount === 0) {
+    showToast('⚠️ Añade al menos un ingrediente');
+    return;
+  }
+  goTo('printing');
+  runPrintAnimation();
+}
+
+function cancelPrint() {
+  clearTimeout(state.printTimer);
+  resetPrintUI();
+  goTo('editor');
+}
+
+function resetPrintUI() {
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('progressLabel').textContent = '0 de 100%';
+  document.getElementById('print-percent').textContent = '0%';
+  document.getElementById('foodOutput').style.height = '0';
+  document.getElementById('printTitle').textContent = 'Preparando impresión...';
+  document.getElementById('printSub').textContent = 'La impresora está calibrando los ingredientes';
+  ['ps1','ps2','ps3','ps4'].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove('done','active');
+  });
+  document.getElementById('doneMsgWrap').style.display = 'none';
+  document.getElementById('print-status-msg').style.display = 'block';
+}
+
+function runPrintAnimation() {
+  resetPrintUI();
+
+  const steps = [
+    { id: 'ps1', pct: 15, title: 'Imprimiendo comida...', sub: 'Calibrando los extrusores de ingredientes', foodH: '20px', delay: 800 },
+    { id: 'ps2', pct: 40, title: 'Imprimiendo comida...', sub: 'Cargando la base del plato', foodH: '45px', delay: 2000 },
+    { id: 'ps3', pct: 75, title: 'Aplicando sabores...', sub: 'Añadiendo capas de textura y sabor', foodH: '70px', delay: 3500 },
+    { id: 'ps4', pct: 95, title: 'Acabado final...', sub: 'Últimos detalles de presentación', foodH: '90px', delay: 5000 },
+  ];
+
+  steps.forEach(s => {
+    state.printTimer = setTimeout(() => {
+      document.getElementById(s.id).classList.add('done');
+      // Marcar siguiente como activo
+      const all = ['ps1','ps2','ps3','ps4'];
+      const idx = all.indexOf(s.id);
+      if (idx + 1 < all.length) document.getElementById(all[idx+1]).classList.add('active');
+
+      setProgress(s.pct);
+      document.getElementById('printTitle').textContent = s.title;
+      document.getElementById('printSub').textContent = s.sub;
+      document.getElementById('foodOutput').style.height = s.foodH;
+    }, s.delay);
+  });
+
+  // Progreso incremental intermedio
+  let currentPct = 0;
+  const progInterval = setInterval(() => {
+    if (currentPct >= 95) { clearInterval(progInterval); return; }
+    currentPct = Math.min(currentPct + 1, 95);
+    setProgress(currentPct);
+  }, 65);
+
+  // LISTO
+  setTimeout(() => {
+    clearInterval(progInterval);
+    setProgress(100);
+    document.getElementById('foodOutput').style.height = '100px';
+    document.getElementById('print-status-msg').style.display = 'none';
+    document.getElementById('doneMsgWrap').style.display = 'flex';
+    document.getElementById('print-percent').textContent = '100%';
+  }, 6500);
+}
+
+function setProgress(pct) {
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = pct + ' de 100%';
+  document.getElementById('print-percent').textContent = pct + '%';
+}
+
+// ────────────────────────────────────────────────────────────────
+// TOAST
+// ────────────────────────────────────────────────────────────────
+let toastTimeout;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ────────────────────────────────────────────────────────────────
+// INIT
+// ────────────────────────────────────────────────────────────────
+renderLibrary();
+renderPlate();
+</script>
+</body>
+</html>
