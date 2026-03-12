@@ -3,315 +3,766 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriPrint Home - Editor de Plato</title>
-    <!-- Incluimos Tailwind CSS para un diseño moderno, rápido y responsive sin necesidad de un archivo CSS extra -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>NutriPrint Home - Prototipo</title>
+    
+    <!-- Fuentes de Google: Montserrat para títulos (moderna), Nunito para texto (simple y legible) -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        /* Estilos CSS adicionales para la animación de impresión */
-        .progress-bar-container {
+        /* === VARIABLES DE COLOR Y DISEÑO === */
+        :root {
+            --color-verde: #4ade80; /* Saludable, natural */
+            --color-verde-oscuro: #16a34a;
+            --color-beige: #fdfbf7; /* Comida casera, cálido */
+            --color-beige-oscuro: #f3ece1;
+            --color-gris-claro: #f3f4f6; /* Tecnología, limpio */
+            --color-blanco: #ffffff;
+            --color-texto: #1f2937;
+            --color-texto-claro: #4b5563;
+            
+            --fuente-titulo: 'Montserrat', sans-serif;
+            --fuente-texto: 'Nunito', sans-serif;
+            
+            --sombra: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radio-borde: 12px;
+        }
+
+        /* === ESTILOS GENERALES === */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--fuente-texto);
+            background-color: var(--color-beige);
+            color: var(--color-texto);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3 {
+            font-family: var(--fuente-titulo);
+            color: var(--color-verde-oscuro);
+        }
+
+        /* Contenedor principal simulando la pantalla de la aplicación/tablet */
+        #app-container {
             width: 100%;
-            height: 8px;
-            background-color: #e2e8f0;
-            border-radius: 4px;
+            max-width: 900px;
+            height: 600px;
+            background-color: var(--color-blanco);
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             overflow: hidden;
-            margin-top: 1rem;
-            display: none; /* Oculto por defecto */
+            display: flex;
+            flex-direction: column;
+            position: relative;
         }
-        .progress-bar-fill {
+
+        /* Header Universal */
+        header {
+            background-color: var(--color-blanco);
+            padding: 20px 30px;
+            border-bottom: 2px solid var(--color-gris-claro);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .logo {
+            font-family: var(--fuente-titulo);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-verde-oscuro);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-volver {
+            background: none;
+            border: none;
+            color: var(--color-texto-claro);
+            font-family: var(--fuente-texto);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            display: none; /* Oculto en el inicio */
+            transition: color 0.3s;
+        }
+
+        .btn-volver:hover {
+            color: var(--color-verde-oscuro);
+        }
+
+        /* Gestión de Pantallas */
+        .pantalla {
+            display: none; /* Ocultas por defecto */
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .pantalla.activa {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Botones Generales */
+        button {
+            font-family: var(--fuente-texto);
+            border: none;
+            border-radius: var(--radio-borde);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .btn-primario {
+            background-color: var(--color-verde);
+            color: white;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            box-shadow: var(--sombra);
+        }
+
+        .btn-primario:hover {
+            background-color: var(--color-verde-oscuro);
+            transform: translateY(-2px);
+        }
+
+        .btn-secundario {
+            background-color: var(--color-gris-claro);
+            color: var(--color-texto);
+            padding: 12px 24px;
+            font-size: 1.1rem;
+        }
+
+        .btn-secundario:hover {
+            background-color: #e5e7eb;
+        }
+
+        /* === 1. PANTALLA INICIO === */
+        #pantalla-inicio {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            gap: 40px;
+        }
+
+        .menu-principal {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .tarjeta-menu {
+            background-color: var(--color-blanco);
+            border: 2px solid var(--color-gris-claro);
+            border-radius: var(--radio-borde);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tarjeta-menu:hover {
+            border-color: var(--color-verde);
+            box-shadow: var(--sombra);
+            transform: translateY(-5px);
+            background-color: var(--color-beige-oscuro);
+        }
+
+        .icono-menu {
+            font-size: 2.5rem;
+        }
+
+        /* === 2. EDITOR DE PLATO === */
+        .editor-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
             height: 100%;
-            background-color: #3b82f6; /* Azul tecnológico */
+        }
+
+        .panel-controles {
+            background-color: var(--color-gris-claro);
+            padding: 20px;
+            border-radius: var(--radio-borde);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        .grupo-ingrediente {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .grupo-ingrediente label {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--color-verde-oscuro);
+        }
+
+        select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-family: var(--fuente-texto);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        select:focus {
+            border-color: var(--color-verde);
+        }
+
+        .panel-sliders {
+            border-top: 2px solid #e5e7eb;
+            padding-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .slider-grupo {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .slider-grupo div {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        input[type=range] {
+            accent-color: var(--color-verde);
+        }
+
+        .panel-visualizacion {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        /* El Plato Visual */
+        .plato-contenedor {
+            width: 250px;
+            height: 250px;
+            background-color: #e5e7eb; /* Borde del plato */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 4px 6px rgba(0,0,0,0.1), 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        .plato-interior {
+            width: 210px;
+            height: 210px;
+            background-color: white;
+            border-radius: 50%;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 50% 50%;
+            grid-template-rows: 50% 50%;
+            gap: 2px;
+            position: relative;
+        }
+
+        /* Secciones del plato */
+        .porcion { transition: background-color 0.4s ease; }
+        #porcion-proteina { background-color: #f1e5d1; } /* Pollo por defecto */
+        #porcion-verdura { background-color: #4ade80; } /* Brócoli por defecto */
+        #porcion-carbo { background-color: #f3f4f6; } /* Arroz por defecto */
+        #porcion-salsa { background-color: #ef4444; } /* Tomate por defecto */
+
+        /* === 3. BIBLIOTECA DE RECETAS === */
+        .grid-recetas {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tarjeta-receta {
+            background-color: var(--color-blanco);
+            border: 1px solid var(--color-gris-claro);
+            padding: 20px;
+            border-radius: var(--radio-borde);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--sombra);
+        }
+
+        .info-receta h3 { margin-bottom: 5px; color: var(--color-texto); }
+        .info-receta p { font-size: 0.9rem; color: var(--color-texto-claro); }
+
+        /* === 4. PANTALLA DE IMPRESIÓN === */
+        #pantalla-impresion {
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .contenedor-progreso {
+            width: 80%;
+            background-color: var(--color-gris-claro);
+            border-radius: 20px;
+            height: 24px;
+            margin: 30px 0;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .barra-progreso {
+            height: 100%;
             width: 0%;
-            transition: width 0.1s linear;
+            background-color: var(--color-verde);
+            border-radius: 20px;
+            transition: width 0.3s linear;
         }
-        /* Animación de pulso para simular que está "trabajando" */
-        .printing-pulse {
-            animation: pulse-shadow 1.5s infinite;
+
+        .animacion-impresion {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite alternate;
         }
-        @keyframes pulse-shadow {
-            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-15px); }
         }
+
+        #mensaje-final-impresion {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* === 5. ESTADO IMPRESORA === */
+        .grid-estado {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .panel-estado {
+            background-color: var(--color-blanco);
+            border: 1px solid var(--color-gris-claro);
+            padding: 20px;
+            border-radius: var(--radio-borde);
+            box-shadow: var(--sombra);
+        }
+
+        .nivel-cartucho {
+            margin-bottom: 15px;
+        }
+        
+        .nivel-cartucho label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .barra-nivel-fondo {
+            height: 10px;
+            background-color: var(--color-gris-claro);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .barra-nivel {
+            height: 100%;
+            border-radius: 5px;
+        }
+
+        .dato-sensor {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--color-gris-claro);
+            font-size: 1.1rem;
+        }
+
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-800 font-sans selection:bg-blue-200">
+<body>
 
-    <!-- Contenedor principal de la aplicación -->
-    <div class="max-w-5xl mx-auto p-4 md:p-8">
-        
-        <!-- Encabezado -->
-        <header class="text-center mb-10">
-            <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 mb-2">
-                NutriPrint Home
-            </h1>
-            <p class="text-lg text-slate-500">Diseña tu comida personalizada para impresión 3D</p>
-        </header>
-
-        <!-- Área de la interfaz: Controles (Izquierda) y Canvas (Derecha) -->
-        <div class="flex flex-col md:flex-row gap-8">
-            
-            <!-- PANEL IZQUIERDO: Controles del editor -->
-            <div class="flex-1 bg-white p-6 rounded-2xl shadow-lg border border-slate-100">
-                <h2 class="text-xl font-bold mb-6 text-slate-700 border-b pb-2">Ajustes de Ingredientes</h2>
-                
-                <!-- Control: Proteína -->
-                <div class="mb-5">
-                    <label class="block text-sm font-semibold mb-1 text-red-600">Proteína</label>
-                    <div class="flex gap-2 mb-2">
-                        <!-- Selector del tipo de ingrediente que cambiará el color en el plato -->
-                        <select id="proteinType" class="flex-1 rounded-md border-slate-300 bg-slate-50 p-2 text-sm focus:ring-blue-500 focus:border-blue-500 border outline-none">
-                            <option value="#f87171">Salmón Sintético</option>
-                            <option value="#b91c1c">Ternera Celular</option>
-                            <option value="#fde047">Tofu Texturizado</option>
-                        </select>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <input type="range" id="proteinAmount" min="0" max="100" value="30" class="w-full accent-red-500">
-                        <span id="proteinLabel" class="text-sm font-medium w-12 text-right">30%</span>
-                    </div>
-                </div>
-
-                <!-- Control: Verduras -->
-                <div class="mb-5">
-                    <label class="block text-sm font-semibold mb-1 text-green-600">Verduras</label>
-                    <div class="flex gap-2 mb-2">
-                        <select id="veggieType" class="flex-1 rounded-md border-slate-300 bg-slate-50 p-2 text-sm focus:ring-blue-500 focus:border-blue-500 border outline-none">
-                            <option value="#4ade80">Brócoli en polvo</option>
-                            <option value="#fb923c">Crema de Zanahoria</option>
-                            <option value="#15803d">Espinaca Líquida</option>
-                        </select>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <input type="range" id="veggieAmount" min="0" max="100" value="40" class="w-full accent-green-500">
-                        <span id="veggieLabel" class="text-sm font-medium w-12 text-right">40%</span>
-                    </div>
-                </div>
-
-                <!-- Control: Carbohidratos -->
-                <div class="mb-6">
-                    <label class="block text-sm font-semibold mb-1 text-yellow-600">Carbohidratos</label>
-                    <div class="flex gap-2 mb-2">
-                        <select id="carbType" class="flex-1 rounded-md border-slate-300 bg-slate-50 p-2 text-sm focus:ring-blue-500 focus:border-blue-500 border outline-none">
-                            <option value="#fef08a">Pasta 3D</option>
-                            <option value="#e2e8f0">Arroz Base</option>
-                            <option value="#d97706">Puré de Patata</option>
-                        </select>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <input type="range" id="carbAmount" min="0" max="100" value="30" class="w-full accent-yellow-500">
-                        <span id="carbLabel" class="text-sm font-medium w-12 text-right">30%</span>
-                    </div>
-                </div>
-
-                <!-- Control: Calorías totales (Afecta el tamaño de la porción en el plato) -->
-                <div class="mb-2 pt-4 border-t">
-                    <label class="block text-sm font-semibold mb-2 text-slate-700">Calorías Totales: <span id="calLabel" class="text-blue-600 font-bold">600 kcal</span></label>
-                    <input type="range" id="caloriesAmount" min="200" max="1200" value="600" step="50" class="w-full accent-blue-600">
-                    <p class="text-xs text-slate-400 mt-1">Ajusta el tamaño de la ración a imprimir.</p>
-                </div>
-            </div>
-
-            <!-- PANEL DERECHO: Canvas de visualización y botón de imprimir -->
-            <div class="flex-1 bg-white p-6 rounded-2xl shadow-lg border border-slate-100 flex flex-col items-center justify-between">
-                
-                <div class="w-full text-center mb-4">
-                    <h2 class="text-xl font-bold text-slate-700">Vista Previa del Plato</h2>
-                </div>
-
-                <!-- Canvas HTML5 donde dibujaremos el plato interactivamente -->
-                <div class="relative flex justify-center items-center w-full my-auto">
-                    <!-- Sombra decorativa detrás del plato -->
-                    <div class="absolute w-64 h-64 bg-slate-200 rounded-full blur-md opacity-50 top-4"></div>
-                    <canvas id="plateCanvas" width="300" height="300" class="relative z-10 rounded-full transition-transform duration-300"></canvas>
-                </div>
-
-                <!-- Controles de Impresión -->
-                <div class="w-full mt-8 text-center">
-                    <button id="printBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
-                        🖨️ Imprimir Plato
-                    </button>
-                    
-                    <!-- Mensaje de estado y barra de progreso (Ocultos inicialmente) -->
-                    <p id="statusMessage" class="text-sm font-semibold text-blue-600 mt-3 h-5 opacity-0 transition-opacity">
-                        Enviando a la impresora de alimentos...
-                    </p>
-                    <div id="progressBar" class="progress-bar-container">
-                        <div id="progressFill" class="progress-bar-fill"></div>
-                    </div>
-                </div>
-            </div>
-            
+<div id="app-container">
+    
+    <!-- HEADER UNIVERSAL -->
+    <header>
+        <div class="logo">
+            <span>🥗</span> NutriPrint Home
         </div>
-    </div>
+        <button class="btn-volver" id="btn-volver" onclick="navegarA('pantalla-inicio')">
+            ← Volver al inicio
+        </button>
+    </header>
 
-    <!-- CÓDIGO JAVASCRIPT: Lógica interactiva -->
-    <script>
-        // 1. Obtener referencias a los elementos del DOM (HTML)
-        const canvas = document.getElementById('plateCanvas');
-        const ctx = canvas.getContext('2d'); // Contexto 2D para dibujar
+    <!-- 1. PANTALLA INICIO -->
+    <main id="pantalla-inicio" class="pantalla activa">
+        <h2>¿Qué deseas preparar hoy?</h2>
+        <div class="menu-principal">
+            <div class="tarjeta-menu" onclick="navegarA('pantalla-editor')">
+                <div class="icono-menu">🎨</div>
+                <h3>Diseñar Plato</h3>
+                <p style="font-size:0.85rem; text-align:center; color:#6b7280;">Crea tu comida a medida</p>
+            </div>
+            <div class="tarjeta-menu" onclick="navegarA('pantalla-recetas')">
+                <div class="icono-menu">📖</div>
+                <h3>Biblioteca</h3>
+                <p style="font-size:0.85rem; text-align:center; color:#6b7280;">Recetas predefinidas</p>
+            </div>
+            <div class="tarjeta-menu" onclick="navegarA('pantalla-estado')">
+                <div class="icono-menu">⚙️</div>
+                <h3>Impresora</h3>
+                <p style="font-size:0.85rem; text-align:center; color:#6b7280;">Niveles y mantenimiento</p>
+            </div>
+        </div>
+    </main>
 
-        // Inputs de cantidad (sliders)
-        const proteinInput = document.getElementById('proteinAmount');
-        const veggieInput = document.getElementById('veggieAmount');
-        const carbInput = document.getElementById('carbAmount');
-        const caloriesInput = document.getElementById('caloriesAmount');
-
-        // Inputs de tipo (selectores de color)
-        const proteinType = document.getElementById('proteinType');
-        const veggieType = document.getElementById('veggieType');
-        const carbType = document.getElementById('carbType');
-
-        // Etiquetas de texto
-        const proteinLabel = document.getElementById('proteinLabel');
-        const veggieLabel = document.getElementById('veggieLabel');
-        const carbLabel = document.getElementById('carbLabel');
-        const calLabel = document.getElementById('calLabel');
-
-        // Elementos de impresión
-        const printBtn = document.getElementById('printBtn');
-        const statusMessage = document.getElementById('statusMessage');
-        const progressBar = document.getElementById('progressBar');
-        const progressFill = document.getElementById('progressFill');
-
-        // 2. Función principal para dibujar el plato en el Canvas
-        function drawPlate() {
-            // Leer los valores actuales de los sliders (cantidades)
-            let pAmount = parseInt(proteinInput.value);
-            let vAmount = parseInt(veggieInput.value);
-            let cAmount = parseInt(carbInput.value);
-            const calories = parseInt(caloriesInput.value);
-
-            // Actualizar los textos de la interfaz
-            proteinLabel.innerText = pAmount + '%';
-            veggieLabel.innerText = vAmount + '%';
-            carbLabel.innerText = cAmount + '%';
-            calLabel.innerText = calories + ' kcal';
-
-            // Leer los colores seleccionados
-            const pColor = proteinType.value;
-            const vColor = veggieType.value;
-            const cColor = carbType.value;
-
-            // Calcular el total para saber las proporciones
-            const total = pAmount + vAmount + cAmount;
-
-            // Limpiar el canvas para volver a dibujar
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-
-            // Dibujar la base del plato (Blanco con borde gris)
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, 140, 0, 2 * Math.PI);
-            ctx.fillStyle = '#ffffff';
-            ctx.fill();
-            ctx.lineWidth = 4;
-            ctx.strokeStyle = '#e2e8f0';
-            ctx.stroke();
-
-            // Dibujar un círculo interior para dar profundidad al plato
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, 110, 0, 2 * Math.PI);
-            ctx.strokeStyle = '#f1f5f9';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // Si todos los valores están en 0, no dibujamos comida
-            if (total === 0) return;
-
-            // Calcular el radio de la comida basado en las calorías (de 200 a 1200 kcal)
-            // Radio base = 50, Radio máximo = 120
-            const foodRadius = 50 + ((calories - 200) / 1000) * 70;
-
-            // Ángulo inicial para empezar a dibujar (Arriba en el centro)
-            let currentAngle = -0.5 * Math.PI;
-
-            // Función interna para dibujar un trozo (sección del plato)
-            function drawFoodSlice(amount, color) {
-                if (amount === 0) return;
-                // Calculamos el ángulo en radianes proporcional a la cantidad
-                const sliceAngle = (amount / total) * (2 * Math.PI);
+    <!-- 2. PANTALLA EDITOR -->
+    <main id="pantalla-editor" class="pantalla">
+        <h2 style="margin-bottom: 20px;">Editor de Plato</h2>
+        
+        <div class="editor-layout">
+            <!-- Panel izquierdo: Controles -->
+            <div class="panel-controles">
                 
-                ctx.beginPath();
-                ctx.moveTo(centerX, centerY);
-                // Dibujamos el arco desde el ángulo actual hasta el ángulo final de esta sección
-                ctx.arc(centerX, centerY, foodRadius, currentAngle, currentAngle + sliceAngle);
-                ctx.closePath();
-                
-                // Rellenar con color
-                ctx.fillStyle = color;
-                ctx.fill();
-                
-                // Añadir un borde sutil para separar ingredientes
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = '#ffffff';
-                ctx.stroke();
+                <div class="grupo-ingrediente">
+                    <label>Base Proteica</label>
+                    <select id="sel-proteina" onchange="actualizarPlato()">
+                        <option value="pollo">Pollo cultivado</option>
+                        <option value="ternera">Ternera vegetal</option>
+                        <option value="tofu">Tofu sedoso</option>
+                    </select>
+                </div>
 
-                // Actualizar el ángulo para el siguiente ingrediente
-                currentAngle += sliceAngle;
-            }
+                <div class="grupo-ingrediente">
+                    <label>Vegetales</label>
+                    <select id="sel-verdura" onchange="actualizarPlato()">
+                        <option value="brocoli">Puré de Brócoli</option>
+                        <option value="zanahoria">Esferas de Zanahoria</option>
+                        <option value="espinaca">Gel de Espinaca</option>
+                    </select>
+                </div>
 
-            // Dibujamos cada porción de ingrediente
-            drawFoodSlice(pAmount, pColor);
-            drawFoodSlice(vAmount, vColor);
-            drawFoodSlice(cAmount, cColor);
+                <div class="grupo-ingrediente">
+                    <label>Carbohidratos</label>
+                    <select id="sel-carbo" onchange="actualizarPlato()">
+                        <option value="arroz">Pasta de Arroz</option>
+                        <option value="patata">Puré de Patata</option>
+                        <option value="quinoa">Base de Quinoa</option>
+                    </select>
+                </div>
+
+                <div class="grupo-ingrediente">
+                    <label>Salsa / Aderezo</label>
+                    <select id="sel-salsa" onchange="actualizarPlato()">
+                        <option value="tomate">Salsa de Tomate</option>
+                        <option value="soja">Emulsión de Soja</option>
+                        <option value="yogur">Salsa de Yogur</option>
+                    </select>
+                </div>
+
+                <div class="panel-sliders">
+                    <div class="slider-grupo">
+                        <div><span>Calorías objetivo:</span> <span id="val-cal">500 kcal</span></div>
+                        <input type="range" id="slide-cal" min="200" max="1000" step="50" value="500" oninput="actualizarSliders()">
+                    </div>
+                    <div class="slider-grupo">
+                        <div><span>Proteínas:</span> <span id="val-prot">30 g</span></div>
+                        <input type="range" id="slide-prot" min="10" max="80" step="5" value="30" oninput="actualizarSliders()">
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Panel derecho: Visualización y Botón -->
+            <div class="panel-visualizacion">
+                <div class="plato-contenedor">
+                    <div class="plato-interior">
+                        <div id="porcion-proteina" class="porcion"></div>
+                        <div id="porcion-verdura" class="porcion"></div>
+                        <div id="porcion-carbo" class="porcion"></div>
+                        <div id="porcion-salsa" class="porcion"></div>
+                    </div>
+                </div>
+                
+                <button class="btn-primario" onclick="iniciarImpresion()">🖨️ Imprimir Plato</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 3. PANTALLA BIBLIOTECA -->
+    <main id="pantalla-recetas" class="pantalla">
+        <h2 style="margin-bottom: 10px;">Biblioteca de Recetas</h2>
+        <p style="color: var(--color-texto-claro);">Selecciona una receta para cargarla en el editor.</p>
+
+        <div class="grid-recetas">
+            <!-- Receta 1 -->
+            <div class="tarjeta-receta">
+                <div class="info-receta">
+                    <h3>Fitness Bowl</h3>
+                    <p>Pollo, Brócoli, Arroz, Yogur</p>
+                    <p style="font-weight:bold; color:var(--color-verde); margin-top:5px;">450 kcal</p>
+                </div>
+                <button class="btn-secundario" onclick="cargarReceta('pollo', 'brocoli', 'arroz', 'yogur', 450, 45)">Cargar</button>
+            </div>
+            <!-- Receta 2 -->
+            <div class="tarjeta-receta">
+                <div class="info-receta">
+                    <h3>Vegan Power</h3>
+                    <p>Tofu, Espinaca, Quinoa, Soja</p>
+                    <p style="font-weight:bold; color:var(--color-verde); margin-top:5px;">380 kcal</p>
+                </div>
+                <button class="btn-secundario" onclick="cargarReceta('tofu', 'espinaca', 'quinoa', 'soja', 380, 25)">Cargar</button>
+            </div>
+            <!-- Receta 3 -->
+            <div class="tarjeta-receta">
+                <div class="info-receta">
+                    <h3>Clásico Casero</h3>
+                    <p>Ternera, Zanahoria, Patata, Tomate</p>
+                    <p style="font-weight:bold; color:var(--color-verde); margin-top:5px;">600 kcal</p>
+                </div>
+                <button class="btn-secundario" onclick="cargarReceta('ternera', 'zanahoria', 'patata', 'tomate', 600, 35)">Cargar</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 4. PANTALLA IMPRESIÓN -->
+    <main id="pantalla-impresion" class="pantalla">
+        <div id="proceso-impresion">
+            <div class="animacion-impresion">🖨️</div>
+            <h2>Imprimiendo comida...</h2>
+            <p style="color: var(--color-texto-claro); margin-top: 10px;">Calentando extrusores y mezclando ingredientes</p>
+            
+            <div class="contenedor-progreso">
+                <div class="barra-progreso" id="barra-impresion"></div>
+            </div>
+            <p id="porcentaje-texto" style="font-weight: bold; font-size: 1.2rem;">0%</p>
+        </div>
+
+        <div id="mensaje-final-impresion">
+            <div style="font-size: 5rem;">✨🍽️</div>
+            <h2 style="color: var(--color-verde-oscuro);">¡Plato listo para comer!</h2>
+            <p>Por favor, retira el plato de la bandeja de impresión con cuidado.</p>
+            <button class="btn-primario" onclick="navegarA('pantalla-inicio')">Volver al Inicio</button>
+        </div>
+    </main>
+
+    <!-- 5. PANTALLA ESTADO IMPRESORA -->
+    <main id="pantalla-estado" class="pantalla">
+        <h2>Estado de la Impresora</h2>
+        
+        <div class="grid-estado">
+            <div class="panel-estado">
+                <h3 style="margin-bottom: 20px;">Nivel de Ingredientes</h3>
+                
+                <div class="nivel-cartucho">
+                    <label><span>Proteína</span> <span>85%</span></label>
+                    <div class="barra-nivel-fondo"><div class="barra-nivel" style="width: 85%; background-color: #d97706;"></div></div>
+                </div>
+                <div class="nivel-cartucho">
+                    <label><span>Vegetales</span> <span>40%</span></label>
+                    <div class="barra-nivel-fondo"><div class="barra-nivel" style="width: 40%; background-color: var(--color-verde);"></div></div>
+                </div>
+                <div class="nivel-cartucho">
+                    <label><span>Carbohidratos</span> <span>15%</span></label>
+                    <div class="barra-nivel-fondo"><div class="barra-nivel" style="width: 15%; background-color: #ef4444;"></div></div>
+                    <p style="font-size: 0.75rem; color: #ef4444; margin-top: 5px;">¡Cartucho bajo! Reemplazar pronto.</p>
+                </div>
+                <div class="nivel-cartucho">
+                    <label><span>Salsas/Aditivos</span> <span>90%</span></label>
+                    <div class="barra-nivel-fondo"><div class="barra-nivel" style="width: 90%; background-color: #3b82f6;"></div></div>
+                </div>
+            </div>
+
+            <div class="panel-estado">
+                <h3 style="margin-bottom: 20px;">Sensores del Sistema</h3>
+                
+                <div class="dato-sensor">
+                    <span style="color: var(--color-texto-claro);">Estado General</span>
+                    <span style="color: var(--color-verde); font-weight: bold;">Lista para imprimir</span>
+                </div>
+                <div class="dato-sensor">
+                    <span style="color: var(--color-texto-claro);">Temperatura Extrusor</span>
+                    <span style="font-weight: bold;">65 °C</span>
+                </div>
+                <div class="dato-sensor">
+                    <span style="color: var(--color-texto-claro);">Conexión Wi-Fi</span>
+                    <span style="font-weight: bold;">Conectado 📶</span>
+                </div>
+                <div class="dato-sensor">
+                    <span style="color: var(--color-texto-claro);">Último mantenimiento</span>
+                    <span style="font-weight: bold;">Hace 5 días</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</div>
+
+<script>
+    // --- LÓGICA DE NAVEGACIÓN (SPA) ---
+    function navegarA(idPantalla) {
+        // Ocultar todas las pantallas
+        document.querySelectorAll('.pantalla').forEach(pantalla => {
+            pantalla.classList.remove('activa');
+        });
+        
+        // Mostrar la pantalla solicitada
+        document.getElementById(idPantalla).classList.add('activa');
+
+        // Gestionar el botón de "Volver" en el Header
+        const btnVolver = document.getElementById('btn-volver');
+        if (idPantalla === 'pantalla-inicio') {
+            btnVolver.style.display = 'none';
+        } else {
+            btnVolver.style.display = 'block';
         }
 
-        // 3. Añadir "Event Listeners" para detectar cuando el usuario interactúa
-        const inputs = [proteinInput, veggieInput, carbInput, caloriesInput, proteinType, veggieType, carbType];
+        // Si navegamos al editor, asegurar que los visuales coinciden con los selects
+        if (idPantalla === 'pantalla-editor') {
+            actualizarPlato();
+        }
         
-        // Cada vez que un control cambia, redibujamos el plato
-        inputs.forEach(input => {
-            input.addEventListener('input', drawPlate);
-        });
+        // Resetear la pantalla de impresión por si volvemos a entrar
+        if (idPantalla !== 'pantalla-impresion') {
+            resetearImpresion();
+        }
+    }
 
-        // 4. Lógica de la simulación de impresión
-        printBtn.addEventListener('click', () => {
-            // Deshabilitar el botón y mostrar estado
-            printBtn.disabled = true;
-            printBtn.innerText = "Imprimiendo...";
-            canvas.classList.add('printing-pulse'); // Añade clase de animación CSS
+    // --- LÓGICA DEL EDITOR DE PLATO ---
+    // Diccionario de colores para simular los ingredientes en el plato
+    const coloresIngredientes = {
+        // Proteínas
+        'pollo': '#f1e5d1', // Beige claro
+        'ternera': '#8b5a2b', // Marrón
+        'tofu': '#ffffff', // Blanco
+        // Verduras
+        'brocoli': '#4ade80', // Verde vibrante
+        'zanahoria': '#fb923c', // Naranja
+        'espinaca': '#16a34a', // Verde oscuro
+        // Carbohidratos
+        'arroz': '#f3f4f6', // Gris muy claro
+        'patata': '#fde047', // Amarillo pálido
+        'quinoa': '#d4a373', // Marrón claro
+        // Salsas
+        'tomate': '#ef4444', // Rojo
+        'soja': '#451a03', // Marrón muy oscuro
+        'yogur': '#f8fafc'  // Blanco azulado
+    };
+
+    function actualizarPlato() {
+        const proteina = document.getElementById('sel-proteina').value;
+        const verdura = document.getElementById('sel-verdura').value;
+        const carbo = document.getElementById('sel-carbo').value;
+        const salsa = document.getElementById('sel-salsa').value;
+
+        // Cambiar el color de fondo de las porciones del plato
+        document.getElementById('porcion-proteina').style.backgroundColor = coloresIngredientes[proteina];
+        document.getElementById('porcion-verdura').style.backgroundColor = coloresIngredientes[verdura];
+        document.getElementById('porcion-carbo').style.backgroundColor = coloresIngredientes[carbo];
+        document.getElementById('porcion-salsa').style.backgroundColor = coloresIngredientes[salsa];
+    }
+
+    function actualizarSliders() {
+        const cal = document.getElementById('slide-cal').value;
+        const prot = document.getElementById('slide-prot').value;
+        
+        document.getElementById('val-cal').innerText = cal + ' kcal';
+        document.getElementById('val-prot').innerText = prot + ' g';
+    }
+
+    // --- LÓGICA DE BIBLIOTECA DE RECETAS ---
+    function cargarReceta(proteina, verdura, carbo, salsa, calorias, proteinasGramos) {
+        // Actualizar los selects
+        document.getElementById('sel-proteina').value = proteina;
+        document.getElementById('sel-verdura').value = verdura;
+        document.getElementById('sel-carbo').value = carbo;
+        document.getElementById('sel-salsa').value = salsa;
+
+        // Actualizar sliders
+        document.getElementById('slide-cal').value = calorias;
+        document.getElementById('slide-prot').value = proteinasGramos;
+        actualizarSliders();
+
+        // Navegar al editor
+        navegarA('pantalla-editor');
+    }
+
+    // --- LÓGICA DE SIMULACIÓN DE IMPRESIÓN ---
+    let intervaloImpresion;
+
+    function iniciarImpresion() {
+        navegarA('pantalla-impresion');
+        
+        let progreso = 0;
+        const barra = document.getElementById('barra-impresion');
+        const texto = document.getElementById('porcentaje-texto');
+        
+        // Simular progreso
+        intervaloImpresion = setInterval(() => {
+            progreso += Math.floor(Math.random() * 15) + 5; // Incremento aleatorio entre 5 y 20
             
-            statusMessage.style.opacity = 1;
-            statusMessage.innerText = "Enviando a la impresora de alimentos...";
-            progressBar.style.display = 'block';
-            
-            let progress = 0;
-            
-            // Simular el proceso con un intervalo que actualiza la barra
-            const interval = setInterval(() => {
-                progress += 5; // Aumentar progreso
-                progressFill.style.width = progress + '%';
+            if (progreso >= 100) {
+                progreso = 100;
+                clearInterval(intervaloImpresion);
                 
-                // Mensajes dinámicos según el progreso
-                if (progress === 30) statusMessage.innerText = "Calentando extrusores...";
-                if (progress === 60) statusMessage.innerText = "Imprimiendo capas base...";
-                if (progress === 90) statusMessage.innerText = "Añadiendo texturas finales...";
+                // Transición al mensaje final
+                setTimeout(() => {
+                    document.getElementById('proceso-impresion').style.display = 'none';
+                    document.getElementById('mensaje-final-impresion').style.display = 'flex';
+                }, 500);
+            }
+            
+            barra.style.width = progreso + '%';
+            texto.innerText = progreso + '%';
+            
+        }, 600);
+    }
 
-                // Al llegar al 100% terminar el proceso
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    statusMessage.innerText = "¡Plato listo! 🍽️";
-                    statusMessage.classList.replace('text-blue-600', 'text-green-600');
-                    canvas.classList.remove('printing-pulse');
-                    
-                    // Restaurar la interfaz después de 3 segundos
-                    setTimeout(() => {
-                        printBtn.disabled = false;
-                        printBtn.innerText = "🖨️ Imprimir Plato";
-                        progressBar.style.display = 'none';
-                        progressFill.style.width = '0%';
-                        statusMessage.style.opacity = 0;
-                        statusMessage.classList.replace('text-green-600', 'text-blue-600');
-                    }, 3000);
-                }
-            }, 150); // El intervalo se ejecuta cada 150 milisegundos
-        });
+    function resetearImpresion() {
+        clearInterval(intervaloImpresion);
+        document.getElementById('barra-impresion').style.width = '0%';
+        document.getElementById('porcentaje-texto').innerText = '0%';
+        document.getElementById('proceso-impresion').style.display = 'block';
+        document.getElementById('mensaje-final-impresion').style.display = 'none';
+    }
 
-        // 5. Dibujo inicial al cargar la página
-        drawPlate();
+</script>
 
-    </script>
 </body>
 </html>
